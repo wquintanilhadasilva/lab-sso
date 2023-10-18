@@ -1,0 +1,139 @@
+application:
+  database:
+    driver-class-name: org.postgresql.Driver # com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://localhost:15432/postgres # jdbc:mysql://localhost:3306/seguranca?useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect # org.hibernate.dialect.MySQL8Dialect
+    user: postgres # root
+    password: 123456 # sso
+
+server:
+  port: '8090'
+  ssl:
+    enabled: 'false'
+
+cas:
+  server:
+    name: http://localhost:${server.port}
+    prefix: ${cas.server.name}/cas
+  ticket:
+    registry:
+      redis:
+        port: '6379'
+        pool:
+          enabled: true
+        database: '0'
+        host: localhost
+  webflow:
+    session:
+      storage: 'true'
+
+  authn:
+    accept:
+      enabled: false
+    ldap[0]:
+      ldapUrl: ldap://localhost:8389/
+      baseDn: cn=users,dc=desenv,dc=oobjlocal,dc=intern
+      bindDn: oobj.admin@desenv.oobj.intern
+      bindCredential: admin_pass
+      searchFilter: sAMAccountName={user}
+      subtreeSearch: true
+      useStartTls: false
+      principalAttributeList: userPrincipalName, userAccountControl, sn, cn, distinguishedName, givenName, displayName, sAMAccountName
+
+    attribute-repository:
+      core:
+        aggregation: MERGE
+      # Carrega os dados complementares do usuário autenticado
+      jdbc[0]:
+        id: USER_DETAILS
+        driver-class: ${application.database.driver-class-name}
+        user: ${application.database.user}
+        password: ${application.database.password}
+        url: ${application.database.url}
+        sql: SELECT * FROM sg_usuario WHERE {0}
+        username: nm_login
+        singleRow: true
+        require-all-attributes: false
+        query-attributes:
+          id_usuario: id_usuario
+          in_tipo_usuario: in_tipo_usuario
+          in_dispensado_pgcade: in_dispensado_pgcade
+          nm_usuario: nm_usuario
+          nr_cpf: nr_cpf
+          nr_matricula: nr_matricula
+          nm_login: nm_login
+          de_email: de_email
+          dt_entrada: dt_entrada
+          dt_saida: dt_saida
+          de_imagem: de_imagem
+          in_status: in_status
+          id_unidade: id_unidade
+          roles: roles
+      # Carrega as roles do usuário autenticado
+      jdbc[1]:
+        attributes:
+          role: authorities
+        id: AUTHORITIES
+        driver-class: ${application.database.driver-class-name}
+        user: ${application.database.user}
+        password: ${application.database.password}
+        url: ${application.database.url}
+        sql: SELECT 'role' as attribute, role as value FROM sg_usuario_roles WHERE {0}
+        username: nm_login
+        singleRow: false
+        columnMappings:
+          attribute: value
+
+    oauth:
+      accessToken:
+        crypto:
+          signing:
+            key: AJSUmbNMbI_2IqV3ZKweTN0Hoer4Dq7Y_AwNnC53Q3GrHkLzKJDdEq0EFpyPTZZW8RcdwdraY9JLxl_kvWhfMA
+          encryption:
+            key: 5XMGKcbPPMHQu3O14aqyK8C4CoRUHcyo3kdlza_kAOw
+      crypto:
+        signing:
+          key: yFEK6C6lYBXe9D3d65DRYLiTQ1c1MN8J3QhOXhd7MQF-3QgituI2PtugjC8k-6_LnGX1nqLZMbWrC6c2gyNEgQ
+        encryption:
+          key: kqdUurhoPstm9PlvP1Knt7CBOdDJtlUEVXtFHyx3A_K4EOEaG3q6fxd_mUB6A7winLvYoTwk05Ohmvdr2vEkhQ
+
+  jdbc:
+    gen-ddl: true
+    show-sql: true
+
+  service-registry:
+    jpa:
+      url: ${application.database.url}
+      user: ${application.database.user}
+      password: ${application.database.password}
+      batch-size: 30
+      autocommit: true
+      dialect: ${application.database.database-platform}
+      driver-class: ${application.database.driver-class-name}
+    core:
+      management-type: DEFAULT
+      init-from-json: false
+    schedule:
+      start-delay: PT5S
+      repeat-interval: PT2M
+      enabled: true
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  redis:
+    database: '0'
+    host: localhost
+    port: '6379'
+  session:
+    store-type: redis
+
+logging:
+  config: file:./etc/cas/config/log4j2.xml
+  level:
+    org:
+      apereo:
+        cas:
+          web: DEBUG
+          authentication: DEBUG
+      ldaptive: DEBUG

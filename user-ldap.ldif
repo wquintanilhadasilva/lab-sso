@@ -1,0 +1,13 @@
+dn: uid=chico.gomes,dc=oobjlocal,dc=com
+cn: Chico Gomes
+departmentnumber: 025262
+displayname: GOMES
+givenname: 75894682312
+initials: 157321001
+mail: chico.gomes@eb.mil.br
+objectclass: inetOrgPerson
+objectclass: top
+sn: Chico Gomes
+title: 1º Ten
+uid: chico.gomes
+userpassword: {MD5}F5GWLq3q3NkAHOiIFWmDcA==

@@ -1,0 +1,81 @@
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
+    enabled: true
+    healthcheck:
+      enabled: true
+    fetch-registry: true
+    register-with-eureka: true
+    instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 10
+  instance:
+    prefer-ip-address: true
+    appname: sso
+    instanceId: sso:${spring.application.instance-id:${random.value}}
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+    status-page-url-path: ${management.endpoints.web.base-path}/info
+    health-check-url-path: ${management.endpoints.web.base-path}/health
+    metadata-map:
+      zone: primary # This is needed for the load balancer
+      profile: ${spring.profiles.active}
+      version: #project.version#
+      git-version: ${git.commit.id.describe:}
+      git-commit: ${git.commit.id.abbrev:}
+      git-branch: ${git.branch:}
+
+ribbon:
+  eureka:
+    enabled: true
+
+spring:
+  cloud:
+    kubernetes:
+      enabled: false
+      discovery:
+        enabled: false
+  autoconfigure:
+    exclude:
+      # Disable Kubernetes autoconfigurations
+      - org.springframework.cloud.kubernetes.KubernetesAutoConfiguration
+      - org.springframework.cloud.kubernetes.discovery.KubernetesCatalogWatchAutoConfiguration
+      - org.springframework.cloud.kubernetes.discovery.reactive.KubernetesReactiveDiscoveryClientAutoConfiguration
+      - org.springframework.cloud.kubernetes.discovery.KubernetesDiscoveryClientAutoConfiguration
+
+feign:
+  hystrix:
+    enabled: true
+
+# See https://github.com/Netflix/Hystrix/wiki/Configuration
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enable: true
+        isolation:
+          strategy: SEMAPHORE
+          # See https://github.com/spring-cloud/spring-cloud-netflix/issues/1330
+          thread:
+            timeoutInMilliseconds: 15000
+        circuitBreaker:
+          requestVolumeThreshold: 200
+          leepWindowInMilliseconds: 5000
+          errorThresholdPercentage: 50
+  shareSecurityContext: true
+  threadpool:
+    default:
+      coreSize: 200
+      maxQueueSize: 200
+      queueSizeRejectionThreshold: 160
+
+logging:
+  level:
+    org:
+      apereo:
+        cas:
+          web: INFO
+          authentication: INFO
+      ldaptive: INFO

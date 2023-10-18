@@ -1,0 +1,17 @@
+server:
+  port: '8084'
+  ssl:
+    enabled: 'false'
+
+logging:
+  level:
+    org:
+      apereo:
+        cas:
+          web: DEBUG
+          authentication: DEBUG
+
+cas:
+  jdbc:
+    gen-ddl: true
+    show-sql: true

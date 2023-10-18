@@ -1,0 +1,13 @@
+{
+  "@class": "org.apereo.cas.support.oauth.services.OAuthRegisteredService",
+  "clientId": "vioservico",
+  "clientSecret": "dmlvc2Vydmljb0BCYXNpczEyMw==",
+  "serviceId": "^https://vio.tst.cldf.basis.com.br.*",
+  "name": "vioservico",
+  "description": "Verbas Online",
+  "id": 50,
+  "bypassApprovalPrompt": true,
+  "attributeReleasePolicy" : {
+    "@class" : "org.apereo.cas.services.ReturnAllAttributeReleasePolicy"
+  }
+}

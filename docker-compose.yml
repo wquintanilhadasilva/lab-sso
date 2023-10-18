@@ -1,0 +1,72 @@
+version: '3'
+services:
+
+  redis:
+    image: redis:4.0.9-alpine
+    container_name: cas_redis
+    ports:
+    - "6379:6379"
+    networks:
+      - cas-network
+
+  sso-postgres:
+    image: postgres:13-alpine
+    container_name: sso-postgresql
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - TZ=GMT
+    ports:
+      - 15432:5432
+    restart: always
+    volumes:
+      - ./volume/database/mysql:/bitnami/mysql
+    networks:
+      - cas-network
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    environment:
+      - LDAP_ORGANISATION=oobjlocal
+      - LDAP_DOMAIN=oobjlocal.com
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin_pass
+      - LDAP_CONFIG_PASSWORD=config_pass
+      - "LDAP_BASE_DN=dc=oobjlocal,dc=com"
+      - LDAP_TLS_CRT_FILENAME=server.crt
+      - LDAP_TLS_KEY_FILENAME=server.key
+      - LDAP_TLS_CA_CRT_FILENAME=oobjlocal.com.ca.crt
+      - LDAP_READONLY_USER=true
+      - LDAP_READONLY_USER_USERNAME=user-ro
+      - LDAP_READONLY_USER_PASSWORD=ro_pass
+    tty: true
+    stdin_open: true
+    ports:
+      - "8389:389"
+      - "8636:636"
+    #domainname: "oobjlocal.com" # important: same as hostname
+    hostname: openldap
+    networks:
+      - cas-network
+    volumes:
+      - ./data/slapd/database:/var/lib/ldap
+      - ./data/slapd/config:/etc/ldap/slapd.d
+      - ./data/certificates:/container/service/slapd/assets/certs
+
+  phpldapadmin:
+    image: osixia/phpldapadmin
+    hostname: phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: openldap
+      PHPLDAPADMIN_HTTPS: false
+    ports:
+      - "8980:80"
+    depends_on:
+      - openldap
+    networks:
+      - cas-network
+
+networks: 
+  cas-network:
+    driver: bridge

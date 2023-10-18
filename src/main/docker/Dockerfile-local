@@ -1,0 +1,32 @@
+FROM openjdk:11.0-jre
+
+COPY *.war /app.war
+
+RUN \
+    # configure timezone
+	cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime &&\
+    # download and import letsencrypt certificate
+    wget https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.der &&\
+    keytool -importcert \
+        -keystore $JAVA_HOME/lib/security/cacerts \
+        -storepass changeit \
+        -alias lets-encrypt \
+        -file lets-encrypt-x3-cross-signed.der \
+        -noprompt &&\
+	rm -R lets-encrypt-x3-cross-signed.der
+
+COPY certs/ /certs/
+
+RUN \
+    # import certificates into keystore
+	keytool -importcert -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias certificadobasispasiphae -file /certs/pasiphae.cer -noprompt
+
+RUN \
+    # import certificates into keystore
+	keytool -importcert -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -alias certificadobasiscastries -file /certs/castries.cer -noprompt
+
+EXPOSE 8080 8000 8443 5701/udp
+
+CMD \
+    java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar /app.war
+

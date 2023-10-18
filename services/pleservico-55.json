@@ -1,0 +1,13 @@
+{
+  "@class": "org.apereo.cas.support.oauth.services.OAuthRegisteredService",
+  "clientId": "pleservico",
+  "clientSecret": "dmlvc2Vydmljb0BCYXNpczEyMw==",
+  "serviceId": "^https://ple.tst.cldf.basis.com.br.*",
+  "name": "pleservico",
+  "description": "Processo Legislativo Eletrônico",
+  "id": 55,
+  "bypassApprovalPrompt": true,
+  "attributeReleasePolicy" : {
+    "@class" : "org.apereo.cas.services.ReturnAllAttributeReleasePolicy"
+  }
+}
