@@ -74,6 +74,87 @@ CREATE TABLE registered_services (
 
 ```
 
+Crie as tabelas para as características do usuário
+
+```
+CREATE TABLE sg_usuario
+(
+    id_usuario bigint NOT NULL,
+    in_tipo_usuario varchar(50),
+    in_dispensado_pgcade boolean,
+    nm_login character varying(255) COLLATE pg_catalog."default",
+    nm_usuario character varying(255) COLLATE pg_catalog."default",
+    nr_cpf character varying(40) COLLATE pg_catalog."default",
+    nr_matricula varchar(50),
+    de_email varchar(255),
+    dt_entrada timestamp,
+    dt_saida timestamp,
+    de_imagem varchar(500),
+    in_status boolean,
+    id_unidade varchar(50),
+    roles varchar(500),
+    CONSTRAINT sg_usuario_pkey PRIMARY KEY (id_usuario),
+    CONSTRAINT sg_usuario_login UNIQUE (nm_login)
+)
+WITH (
+    OIDS = FALSE
+);
+```
+
+Agora a tabela com as roles do usuário
+```
+CREATE TABLE sg_usuario_roles
+(
+    nm_login character varying(255) COLLATE pg_catalog."default",
+    role character varying(255) COLLATE pg_catalog."default"
+)
+WITH (
+    OIDS = FALSE
+);
+```
+
+### Agora inserindo os dados mock
+
+Usuário RDBMS
+```
+INSERT INTO sg_usuario
+(id_usuario, in_tipo_usuario, in_dispensado_pgcade, nm_login, nm_usuario, nr_cpf, nr_matricula, de_email, dt_entrada, dt_saida, de_imagem, in_status, id_unidade, roles)
+VALUES(0, 'F', false, 'user1@test.com', 'Usuário de teste RDBMS', '99999999999', '001', 'user1@test.com', '2023-07-01T09:05:00', null, null, true, 'UNIDADE1', 'ADMIN,USER');
+```
+
+Usuário LDAP
+```
+INSERT INTO sg_usuario
+(id_usuario, in_tipo_usuario, in_dispensado_pgcade, nm_login, nm_usuario, nr_cpf, nr_matricula, de_email, dt_entrada, dt_saida, de_imagem, in_status, id_unidade, roles)
+VALUES(1, 'F', false, 'chico.gomes', 'Usuário de teste LDAP', '11111111111', '002', 'chico.gomes@ldap.com', '2023-01-02T09:05:00', null, null, true, 'UNIDADE8', 'LDAP,ADMIN,USER');
+```
+
+
+### Agora inserindo as roles
+
+```
+INSERT INTO sg_usuario_roles
+(nm_login, role)
+VALUES('chico.gomes', 'LDAPUSER');
+INSERT INTO sg_usuario_roles
+(nm_login, role)
+VALUES('chico.gomes', 'SUPERVISOR');
+INSERT INTO sg_usuario_roles
+(nm_login, role)
+VALUES('chico.gomes', 'PORTARIA');
+```
+
+```
+INSERT INTO sg_usuario_roles
+(nm_login, role)
+VALUES('user1@test.com', 'RDBMS');
+INSERT INTO sg_usuario_roles
+(nm_login, role)
+VALUES('user1@test.com', 'DIRETOR');
+INSERT INTO sg_usuario_roles
+(nm_login, role)
+VALUES('user1@test.com', 'APROVADOR');
+```
 
 ## LDAP
 
