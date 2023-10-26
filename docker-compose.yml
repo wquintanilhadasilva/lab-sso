@@ -21,7 +21,7 @@ services:
       - 15432:5432
     restart: always
     volumes:
-      - ./volume/database/mysql:/bitnami/mysql
+      - ./data:/var/lib/postgresql/data"
     networks:
       - cas-network
 

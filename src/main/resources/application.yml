@@ -30,15 +30,30 @@ cas:
   authn:
     accept:
       enabled: false
+    jdbc:
+      query[0]:
+        password: ${application.database.password}
+        password-encoder:
+          type: BCRYPT
+        user: ${application.database.user}
+        field-disabled: disabled
+        driver-class: ${application.database.driver-class-name}
+        url: ${application.database.url}
+        sql: SELECT * FROM users WHERE email = ?
+        field-password: password
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        field-expired: expired
+        principal-attribute-list: id,email,first_name,last_name,disabled,expired
+
     ldap[0]:
-      ldapUrl: ldap://localhost:8389/
-      baseDn: cn=users,dc=desenv,dc=oobjlocal,dc=intern
-      bindDn: oobj.admin@desenv.oobj.intern
-      bindCredential: admin_pass
-      searchFilter: sAMAccountName={user}
+      ldapUrl: ldap://localhost:8389
+      base-dn: dc=oobjlocal,dc=com
+      bind-dn: cn=admin,dc=oobjlocal,dc=com
+      bind-credential: admin_pass
+      search-filter: uid={user}
       subtreeSearch: true
       useStartTls: false
-      principalAttributeList: userPrincipalName, userAccountControl, sn, cn, distinguishedName, givenName, displayName, sAMAccountName
+      principalAttributeList: cn, departmentNumber, displayName, mail, initials, sn, givenName, displayName, title, uid
 
     attribute-repository:
       core:

@@ -126,11 +126,19 @@ sdk install gradle 7.6.3
 ```
 sudo ./gradlew clean copyCasConfiguration build run
 ```
+ou
 
+```
+./build.sh run
+```
 ### Com debug
 
 ```
 sudo ./gradlew clean copyCasConfiguration build debug
+```
+ou
+```
+./build.sh debug
 ```
 
 
@@ -163,12 +171,12 @@ Senha   : admin_pass
 
 ## Acessar o login do CAS:
 
-Acessar a url de login em [http://localhost:8084/cas/login](http://localhost:8084/cas/login)
+Acessar a url de login em [http://localhost:8090/cas/login](http://localhost:8090/cas/login)
 
 Lembrando que a porta é a mesma configurada na chave `server.port` nos arquivos de configuração do CAS.
 
 
-Após login, caso queira trocar de usuário, é necessário fazer o logout através da url [http://localhost:8084/cas/logout](http://localhost:8084/cas/logout).
+Após login, caso queira trocar de usuário, é necessário fazer o logout através da url [http://localhost:8090/cas/logout](http://localhost:8090/cas/logout).
 
 
 Dados para autenticação (Considerando as etapas e exemplos citados anteriormente, nas seções acima):

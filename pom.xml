@@ -7,7 +7,7 @@
   <!-- that they should prefer consuming it instead. -->
   <!-- do_not_remove: published-with-gradle-metadata -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>br.com.basis</groupId>
+  <groupId>br.com.labcas</groupId>
   <artifactId>cas</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>war</packaging>
@@ -30,11 +30,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apereo.cas</groupId>
-      <artifactId>cas-server-support-eureka-client</artifactId>
-      <version>${cas.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.apereo.cas</groupId>
       <artifactId>cas-server-webapp${app.server}</artifactId>
