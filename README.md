@@ -161,7 +161,7 @@ VALUES('user1@test.com', 'APROVADOR');
 Adicione o usuário do LDAP que será usado para autenticação no CAS. Utilize o grupo de informações abaixo:
 
 ```
-dn: uid=chico.gomes,dc=oobjlocal,dc=com,dc=br
+dn: uid=chico.gomes,dc=oobjlocal,dc=com
 cn: Chico Gomes
 departmentnumber: 025262
 displayname: GOMES
@@ -182,9 +182,9 @@ userpassword: {MD5}F5GWLq3q3NkAHOiIFWmDcA==
 Grave o conteúdo acima em um arquivo com a extensão ldif (exemplo: user-ldap.ldif) e adicione ao LDAP rodando o comando abaixo:
 
 ```
-ldapadd -c -x -H ldap://localhost:8389 -D "cn=admin,dc=oobjlocal,dc=com,dc=br" -W -f ./user-ldap.ldif 
+ldapadd -c -x -H ldap://localhost:8389 -D "cn=admin,dc=oobjlocal,dc=com" -W -f ./user-ldap.ldif 
 ```
-* A DN onde este usuário está sendo inserido é `cn=admin,dc=oobj,dc=com,dc=br`;
+* A DN onde este usuário está sendo inserido é `cn=admin,dc=oobjlocal,dc=com`;
 * A senha do admin solicitada ao executar o comando acima é `admin_pass` (vide configuração no arquivo [docker-compose.yml](./docker-compose.yml#L48)).
 
 
