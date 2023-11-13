@@ -1,0 +1,18 @@
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          my-keycloak-provider:
+            issuer-uri: http://localhost:8081/auth/realms/demo
+        registration:
+          keycloak-spring-gateway-client:
+            provider: my-keycloak-provider
+            client-id: springboot-microservice
+            client-secret: KjuZo9IGMMydtZv4De46ni0SfenaexZg
+            authorization-grant-type: authorization_code
+            scope: openid,offline_access,profile
+            redirect-uri: '{baseUrl}/login/oauth2/code/keycloak'
+server:
+  port: 9090
