@@ -2,43 +2,61 @@ package br.com.wqs.lab.gateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.http.OAuth2ErrorResponseErrorHandler;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.endpoint.DefaultMapOAuth2AccessTokenResponseConverter;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain (ServerHttpSecurity http) {
-//        http.authorizeRequests()
-//                .anyRequest().authenticated()
-//                .and()
-//                .oauth2Login();
-//        return http.build();
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-            .oauth2Client()
-            .and()
-            .oauth2Login()
-            .tokenEndpoint()
-            .and()
-            .userInfoEndpoint();
+        http.authorizeHttpRequests(request ->
+                        request
+                                .requestMatchers("/login", "/resources/**", "/logout").permitAll()
+                                .anyRequest().authenticated())
+                .oauth2Login(oauth ->
+                        oauth.loginPage("/login")
+                                .tokenEndpoint(token -> {
+                                    var defaultMapConverter = new DefaultMapOAuth2AccessTokenResponseConverter();
+                                    Converter<Map<String, Object>, OAuth2AccessTokenResponse> linkedinMapConverter = tokenResponse -> {
+                                        var withTokenType = new HashMap<>(tokenResponse);
+                                        withTokenType.put(OAuth2ParameterNames.TOKEN_TYPE, OAuth2AccessToken.TokenType.BEARER.getValue());
+                                        return  defaultMapConverter.convert(withTokenType);
+                                    };
 
-        http
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+                                    var httpConverter = new OAuth2AccessTokenResponseHttpMessageConverter();
+                                    httpConverter.setAccessTokenResponseConverter(linkedinMapConverter);
 
-        http
-            .authorizeHttpRequests()
-            .requestMatchers("/unauthenticated", "/oauth2/**", "/login/**").permitAll()
-            .anyRequest()
-            .fullyAuthenticated()
-            .and()
-            .logout()
-            .logoutSuccessUrl("http://localhost:8080/realms/external/protocol/openid-connect/logout?redirect_uri=http://localhost:8081/");
+                                    var restOperations = new RestTemplate(List.of(new FormHttpMessageConverter(), httpConverter));
+                                    restOperations.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
+
+                                    var client = new DefaultAuthorizationCodeTokenResponseClient();
+                                    client.setRestOperations(restOperations);
+
+                                    token.accessTokenResponseClient(client);
+                                }))
+                .logout(logout ->
+                        logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
+                                .logoutSuccessUrl("/login"));
 
         return http.build();
     }
+
 }

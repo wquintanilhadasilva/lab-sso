@@ -1,5 +1,16 @@
 
 spring:
+  cloud:
+    gateway:
+      default-filters:
+        - TokenRelay=
+      routes:
+        - id: quotes
+          uri: http://localhost:8085
+          predicates:
+            - Path=/quotes/**
+          filters:
+            - TokenRelay=
   security:
     oauth2:
       client:
