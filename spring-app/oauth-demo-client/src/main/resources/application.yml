@@ -1,1 +1,18 @@
+server:
+  port: 8083
 
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: springboot-microservice
+            client-secret: eOrOHGXpTLwaB0WmjkneBSfuM6Hm56fc
+            scope: openid, profile, email
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8081/auth/realms/demo
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/auth/realms/demo
