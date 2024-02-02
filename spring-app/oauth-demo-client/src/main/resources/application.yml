@@ -12,7 +12,7 @@ spring:
             scope: openid, profile, email
         provider:
           keycloak:
-            issuer-uri: http://localhost:8081/auth/realms/demo
+            issuer-uri: http://localhost:7081/realms/demo
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8081/auth/realms/demo
+          issuer-uri: http://localhost:7081/realms/demo
